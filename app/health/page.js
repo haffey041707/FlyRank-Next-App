@@ -13,24 +13,33 @@ export const dynamic = "force-dynamic";
 
 /**
  * A server-side fetch needs an absolute URL — there is no origin to resolve
- * "/api/health" against. Derive it from the incoming request, falling back to
- * the configured site URL.
+ * "/api/health" against. Derive it from the incoming request, which works on
+ * any host (including behind Vercel's proxy) without hard-coding a domain.
+ *
+ * Returns null when no origin can be determined. A loopback address is only
+ * ever assumed in development, so a production deployment can never end up
+ * calling localhost.
  */
 async function getBaseUrl() {
   const headerList = await headers();
   const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
 
-  if (!host) {
-    return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  if (host) {
+    const isLoopback =
+      host.startsWith("localhost") || host.startsWith("127.0.0.1");
+    const protocol =
+      headerList.get("x-forwarded-proto") ?? (isLoopback ? "http" : "https");
+
+    return `${protocol}://${host}`;
   }
 
-  const protocol =
-    headerList.get("x-forwarded-proto") ??
-    (host.startsWith("localhost") || host.startsWith("127.0.0.1")
-      ? "http"
-      : "https");
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
 
-  return `${protocol}://${host}`;
+  return process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : null;
 }
 
 /**
@@ -38,7 +47,18 @@ async function getBaseUrl() {
  * itself a health result, so it is returned as data for the page to render.
  */
 async function fetchHealth() {
-  const endpoint = `${await getBaseUrl()}/api/health`;
+  const baseUrl = await getBaseUrl();
+
+  if (!baseUrl) {
+    return {
+      ok: false,
+      endpoint: "/api/health",
+      error:
+        "Could not determine the request origin, so the health endpoint was not called.",
+    };
+  }
+
+  const endpoint = `${baseUrl}/api/health`;
 
   try {
     const response = await fetch(endpoint, { cache: "no-store" });

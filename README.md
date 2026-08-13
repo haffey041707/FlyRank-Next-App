@@ -163,6 +163,64 @@ check is a health result, so a connection failure or a non-2xx response renders 
 visible error state instead of a crash. The page reports whether server-side
 variables are configured — never their values.
 
+## Deployment
+
+Deployed on [Vercel](https://vercel.com), connected to this GitHub repository.
+Vercel detects Next.js automatically — framework preset, build command
+(`next build`), install command, and output directory all resolve without
+configuration, so this repo intentionally ships **no `vercel.json`**. Add one
+only when you need something the defaults do not cover (custom headers, redirects,
+cron, or region pinning).
+
+### Connecting the repository
+
+1. On Vercel: **Add New → Project → Import Git Repository**, and pick
+   `FlyRank-Next-App`.
+2. Leave the framework preset on the detected **Next.js**; leave build and output
+   settings untouched.
+3. Add the environment variables below **before** the first deploy, so the initial
+   build has them.
+4. Deploy.
+
+### Production deployments
+
+Every push to `main` triggers a production deployment to the project's production
+domain. `main` is the production branch, so treat it as deployable at all times —
+merge through a branch and let its preview build vouch for it first.
+
+### Preview deployments
+
+Every push to any other branch, and every pull request, gets its own isolated
+preview deployment on a unique URL, built exactly like production. The PR gets a
+comment with the link. Previews use the Preview environment's variables, so a
+preview never touches production credentials.
+
+### Environment variables
+
+Set these in **Project → Settings → Environment Variables**, choosing which of
+Production / Preview / Development each applies to. Values live in Vercel, never
+in the repository — `.env.local` is git-ignored and never uploaded.
+
+| Variable | Scope | Environments | Notes |
+| --- | --- | --- | --- |
+| `ANTHROPIC_API_KEY` | server-only | Production, Preview | Secret. Never prefix with `NEXT_PUBLIC_`. Use a separate key for Preview if you want isolated usage limits. |
+| `APP_ENV` | server-only | all | `production` / `preview` / `development`. Surfaced by `/api/health`. |
+| `NEXT_PUBLIC_APP_NAME` | public | all | Non-secret display value. |
+| `NEXT_PUBLIC_SITE_URL` | public | all | Set to the deployment's own URL. |
+
+Two things worth knowing:
+
+- `NEXT_PUBLIC_*` values are **inlined at build time**, so changing one requires a
+  redeploy, not just a restart. Server-only variables are read at runtime.
+- Server-only variables are readable in Server Components, route handlers, and
+  server actions — never in the browser. Keep Claude API calls server-side.
+
+After deploying, `/health` fetches `/api/health` on the server and renders the
+live result, so it doubles as a post-deploy smoke test: it shows `status: ok`,
+the service name, the environment, and a fresh timestamp. It derives its own
+origin from the request headers, so no domain is hard-coded and the same code
+works on preview URLs, the production domain, and localhost.
+
 ## Project structure
 
 ```
