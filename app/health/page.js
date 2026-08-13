@@ -47,6 +47,7 @@ export default function HealthPage() {
   const runtime = [
     { label: "Status", value: "Healthy", tone: "success" },
     { label: "Environment", value: process.env.NODE_ENV },
+    { label: "APP_ENV", value: process.env.APP_ENV ?? "Not set" },
     { label: "Node runtime", value: process.version },
     { label: "Routes registered", value: `${navItems.length + 1}` },
     { label: "Checked at", value: new Date().toISOString() },
@@ -61,7 +62,7 @@ export default function HealthPage() {
       label: "NEXT_PUBLIC_SITE_URL",
       value: process.env.NEXT_PUBLIC_SITE_URL ?? "Not set",
     },
-    { label: "API_KEY", value: configured("API_KEY") },
+    { label: "ANTHROPIC_API_KEY", value: configured("ANTHROPIC_API_KEY") },
     { label: "DATABASE_URL", value: configured("DATABASE_URL") },
   ];
 

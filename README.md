@@ -32,10 +32,50 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Environment variables
 
-Real values live in `.env.local`, which is git-ignored and **must never be
-committed**. `.env.example` is the checked-in template and contains placeholders
-only. Variables prefixed with `NEXT_PUBLIC_` are exposed to the browser — keep
-secrets unprefixed and server-side.
+**1. Copy the template.**
+
+```bash
+cp .env.example .env.local
+```
+
+**2. Add your local values in `.env.local`.** That is the only file real values
+belong in. `.env.example` is committed and must stay filled with blanks and
+non-secret defaults.
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...   # your key, in .env.local only
+APP_ENV=development
+```
+
+**3. Never commit `.env.local`.** It is git-ignored, along with `.env`,
+`.env.production.local`, and every other `.env.*` file. `.env.example` is the
+single tracked exception. Verify at any time with:
+
+```bash
+git ls-files | grep -E '^\.env'     # expect only: .env.example
+git check-ignore .env .env.local .env.production.local
+```
+
+**4. Secrets stay server-side.** Next.js loads `.env*` into `process.env`, and
+variables are server-only by default — readable in Server Components, route
+handlers, and server actions, but never shipped to the browser. Only variables
+prefixed `NEXT_PUBLIC_` are inlined into the client bundle at build time, where
+anyone can read them. So:
+
+| Variable | Scope | Rule |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | server-only | never prefix it, never send it to the client |
+| `APP_ENV` | server-only | deployment environment |
+| `NEXT_PUBLIC_APP_NAME` | public | safe, non-secret display value |
+| `NEXT_PUBLIC_SITE_URL` | public | safe, non-secret display value |
+
+Calls to the Claude API therefore belong in server code (a route handler or
+server action) that reads `process.env.ANTHROPIC_API_KEY` — never in a
+`"use client"` component. `/health` reflects this: it reports whether a secret
+is configured, never its value.
+
+If you rotate or add a variable, restart the dev server — `.env*` files are read
+at startup.
 
 ## Design system
 
