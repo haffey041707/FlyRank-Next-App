@@ -37,13 +37,53 @@ committed**. `.env.example` is the checked-in template and contains placeholders
 only. Variables prefixed with `NEXT_PUBLIC_` are exposed to the browser — keep
 secrets unprefixed and server-side.
 
+## Routes
+
+Every screen from the spec exists as a routed placeholder.
+
+| Route          | Screen      | Status            |
+| -------------- | ----------- | ----------------- |
+| `/`            | Home        | Scaffold complete |
+| `/dashboard`   | Dashboard   | Coming soon       |
+| `/study`       | Study       | Coming soon       |
+| `/quiz`        | Quiz        | Coming soon       |
+| `/flashcards`  | Flashcards  | Coming soon       |
+| `/study-plan`  | Study Plan  | Coming soon       |
+| `/history`     | History     | Coming soon       |
+| `/settings`    | Settings    | Coming soon       |
+| `/health`      | Health      | Scaffold complete |
+
+`/health` is rendered per request (`dynamic = "force-dynamic"`) so it reports the
+running server, not build-time values. It shows whether server-side variables are
+configured — never their values.
+
 ## Project structure
 
 ```
-app/            App Router routes, layouts, and global styles
-public/         Static assets served from /
-.env.example    Environment variable template (no secrets)
-eslint.config.mjs
-next.config.mjs
-postcss.config.mjs   Tailwind CSS v4 via @tailwindcss/postcss
+app/
+  layout.js            root layout: shared nav, footer, skip link
+  page.js              /
+  globals.css          Tailwind v4 entry
+  components/
+    site-nav.js        shared navigation (the only Client Component)
+    screen.js          shared placeholder shell
+  dashboard/page.js    /dashboard
+  study/page.js        /study
+  quiz/page.js         /quiz
+  flashcards/page.js   /flashcards
+  study-plan/page.js   /study-plan
+  history/page.js      /history
+  settings/page.js     /settings
+  health/page.js       /health
+lib/
+  routes.js            single source of truth for the nav + screen list
+public/                static assets served from /
+.env.example           environment variable template (no secrets)
 ```
+
+### Server vs Client Components
+
+Every page is a Server Component. `app/components/site-nav.js` is the only file
+with `"use client"`, because it needs real interactivity: the mobile menu's
+open/close state and active-link highlighting via `usePathname()`. Adding a
+screen means adding one entry to `lib/routes.js` plus its `page.js`.
