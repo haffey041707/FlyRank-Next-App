@@ -7,7 +7,10 @@ import Card from "./card";
 
 const STATUS_VARIANTS = {
   "Scaffold complete": "bg-success-soft text-success ring-success/30",
+  Operational: "bg-success-soft text-success ring-success/30",
   "Coming soon": "bg-warning-soft text-warning ring-warning/30",
+  Degraded: "bg-warning-soft text-warning ring-warning/30",
+  Unavailable: "bg-danger-soft text-danger ring-danger/30",
   Blocked: "bg-danger-soft text-danger ring-danger/30",
 };
 

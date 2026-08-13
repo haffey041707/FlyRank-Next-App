@@ -1,15 +1,69 @@
+import { headers } from "next/headers";
 import Card from "@/app/components/card";
 import Screen, { SectionHeading } from "@/app/components/screen";
-import { navItems } from "@/lib/routes";
 
 export const metadata = {
   title: "Health",
-  description: "Runtime and configuration status for this deployment.",
+  description: "Live health-check status for this deployment.",
 };
 
 // Rendered per request so the readout reflects the running server rather than
 // values frozen at build time.
 export const dynamic = "force-dynamic";
+
+/**
+ * A server-side fetch needs an absolute URL — there is no origin to resolve
+ * "/api/health" against. Derive it from the incoming request, falling back to
+ * the configured site URL.
+ */
+async function getBaseUrl() {
+  const headerList = await headers();
+  const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
+
+  if (!host) {
+    return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  }
+
+  const protocol =
+    headerList.get("x-forwarded-proto") ??
+    (host.startsWith("localhost") || host.startsWith("127.0.0.1")
+      ? "http"
+      : "https");
+
+  return `${protocol}://${host}`;
+}
+
+/**
+ * Fetches the health endpoint on the server. Never throws: a failed check is
+ * itself a health result, so it is returned as data for the page to render.
+ */
+async function fetchHealth() {
+  const endpoint = `${await getBaseUrl()}/api/health`;
+
+  try {
+    const response = await fetch(endpoint, { cache: "no-store" });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        endpoint,
+        error: `The health endpoint responded with ${response.status} ${response.statusText}.`,
+      };
+    }
+
+    return { ok: true, endpoint, data: await response.json() };
+  } catch (error) {
+    // Surface the reason without leaking a stack trace into the page.
+    return {
+      ok: false,
+      endpoint,
+      error:
+        error instanceof Error
+          ? `The health endpoint could not be reached (${error.message}).`
+          : "The health endpoint could not be reached.",
+    };
+  }
+}
 
 /**
  * Reports only whether a server-side variable is configured — never its value,
@@ -19,39 +73,23 @@ function configured(name) {
   return Boolean(process.env[name]) ? "Configured" : "Not set";
 }
 
-function DefinitionList({ rows, labelClassName = "", valueClassName = "" }) {
+function Row({ label, value, tone }) {
   return (
-    // Card renders the <dl> itself: dl > div > dt/dd is the one wrapper level
-    // the HTML spec allows.
-    <Card as="dl" className="mt-stack divide-y divide-border">
-      {rows.map(({ label, value, tone }) => (
-        <div
-          key={label}
-          className="flex justify-between gap-4 px-gutter py-3 text-sm"
-        >
-          <dt className={`text-muted ${labelClassName}`}>{label}</dt>
-          <dd
-            className={`${
-              tone === "success" ? "text-success" : "text-foreground"
-            } ${valueClassName}`}
-          >
-            {value}
-          </dd>
-        </div>
-      ))}
-    </Card>
+    <div className="flex justify-between gap-4 px-gutter py-3 text-sm">
+      <dt className="shrink-0 text-muted">{label}</dt>
+      <dd
+        className={`min-w-0 text-right font-mono break-all ${
+          tone === "success" ? "text-success" : "text-foreground"
+        }`}
+      >
+        {value}
+      </dd>
+    </div>
   );
 }
 
-export default function HealthPage() {
-  const runtime = [
-    { label: "Status", value: "Healthy", tone: "success" },
-    { label: "Environment", value: process.env.NODE_ENV },
-    { label: "APP_ENV", value: process.env.APP_ENV ?? "Not set" },
-    { label: "Node runtime", value: process.version },
-    { label: "Routes registered", value: `${navItems.length + 1}` },
-    { label: "Checked at", value: new Date().toISOString() },
-  ];
+export default async function HealthPage() {
+  const health = await fetchHealth();
 
   const config = [
     {
@@ -70,25 +108,76 @@ export default function HealthPage() {
     <Screen
       eyebrow="Diagnostics"
       title="Health"
-      description="Runtime and configuration status for this deployment. Server-side secrets are reported as configured or not set — never by value."
-      status="Scaffold complete"
+      description="Live status fetched on the server from the /api/health route handler. Server-side secrets are reported as configured or not set — never by value."
+      status={health.ok ? "Operational" : "Unavailable"}
     >
-      <section className="mt-section" aria-labelledby="runtime-heading">
-        <SectionHeading id="runtime-heading">Runtime</SectionHeading>
-        <DefinitionList
-          rows={runtime}
-          labelClassName="shrink-0"
-          valueClassName="min-w-0 text-right font-mono break-all"
-        />
+      <section className="mt-section" aria-labelledby="status-heading">
+        <SectionHeading id="status-heading">Health check</SectionHeading>
+
+        {health.ok ? (
+          <>
+            <Card className="mt-stack border-success/30 bg-success-soft px-gutter py-3">
+              <p className="flex items-center gap-2 text-sm font-medium text-success">
+                <span
+                  className="size-2 rounded-pill bg-current"
+                  aria-hidden="true"
+                />
+                All systems operational
+              </p>
+            </Card>
+
+            <Card as="dl" className="mt-stack divide-y divide-border">
+              <Row
+                label="System status"
+                value={health.data.status}
+                tone="success"
+              />
+              <Row label="Service" value={health.data.service} />
+              <Row label="Environment" value={health.data.environment} />
+              <Row label="Timestamp" value={health.data.timestamp} />
+              <Row label="Uptime" value={`${health.data.uptimeSeconds}s`} />
+            </Card>
+          </>
+        ) : (
+          <Card className="mt-stack border-danger/30 bg-danger-soft px-gutter py-4">
+            <p className="flex items-center gap-2 text-sm font-medium text-danger">
+              <span
+                className="size-2 rounded-pill bg-current"
+                aria-hidden="true"
+              />
+              Health check failed
+            </p>
+            <p className="mt-2 text-sm text-foreground">{health.error}</p>
+            <p className="mt-2 text-sm text-muted">
+              The page itself is rendering, so the server is up — the check
+              above could not read the endpoint.
+            </p>
+          </Card>
+        )}
+
+        <p className="mt-3 text-xs text-muted">
+          Source:{" "}
+          <code className="font-mono text-primary-accent">
+            GET {health.endpoint}
+          </code>
+        </p>
       </section>
 
       <section className="mt-section" aria-labelledby="config-heading">
         <SectionHeading id="config-heading">Configuration</SectionHeading>
-        <DefinitionList
-          rows={config}
-          labelClassName="min-w-0 font-mono break-all"
-          valueClassName="shrink-0 text-right"
-        />
+        <Card as="dl" className="mt-stack divide-y divide-border">
+          {config.map(({ label, value }) => (
+            <div
+              key={label}
+              className="flex justify-between gap-4 px-gutter py-3 text-sm"
+            >
+              <dt className="min-w-0 font-mono break-all text-muted">
+                {label}
+              </dt>
+              <dd className="shrink-0 text-right text-foreground">{value}</dd>
+            </div>
+          ))}
+        </Card>
       </section>
     </Screen>
   );

@@ -140,9 +140,28 @@ Every screen from the spec exists as a routed placeholder.
 | `/settings`    | Settings    | Coming soon       |
 | `/health`      | Health      | Scaffold complete |
 
-`/health` is rendered per request (`dynamic = "force-dynamic"`) so it reports the
-running server, not build-time values. It shows whether server-side variables are
-configured — never their values.
+### API
+
+| Endpoint | Method | Returns |
+| --- | --- | --- |
+| `/api/health` | `GET` | `{ status, service, environment, timestamp, uptimeSeconds }` |
+
+`app/api/health/route.js` is a Route Handler built on the Web `Response` API. It
+returns safe, non-secret information only and sends `Cache-Control: no-store` so
+no proxy serves a stale check. Route Handlers are uncached by default in
+Next.js 16.
+
+`/health` is a Server Component that fetches that endpoint **on the server**
+(`cache: "no-store"`) and renders the result — no client-side data fetching and
+no `"use client"`. A server fetch has no origin to resolve a relative path
+against, so the page derives an absolute URL from the request's
+`x-forwarded-host`/`host` headers, falling back to `NEXT_PUBLIC_SITE_URL`.
+
+Both pages are rendered per request (`dynamic = "force-dynamic"`) so they report
+the running server, not build-time values. `fetchHealth()` never throws: a failed
+check is a health result, so a connection failure or a non-2xx response renders a
+visible error state instead of a crash. The page reports whether server-side
+variables are configured — never their values.
 
 ## Project structure
 
@@ -150,7 +169,9 @@ configured — never their values.
 app/
   layout.js            root layout + app shell (Server)
   page.js              /
-  globals.css          Tailwind v4 entry
+  globals.css          Tailwind v4 entry + design tokens
+  api/
+    health/route.js    GET /api/health route handler
   components/
     sidebar.js         desktop sidebar          (Server)
     header.js          simple top bar           (Server)
