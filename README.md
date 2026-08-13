@@ -61,12 +61,15 @@ configured — never their values.
 
 ```
 app/
-  layout.js            root layout: shared nav, footer, skip link
+  layout.js            root layout + app shell (Server)
   page.js              /
   globals.css          Tailwind v4 entry
   components/
-    site-nav.js        shared navigation (the only Client Component)
-    screen.js          shared placeholder shell
+    sidebar.js         desktop sidebar          (Server)
+    header.js          simple top bar           (Server)
+    screen.js          shared placeholder shell (Server)
+    nav-links.js       link list, active state  ("use client")
+    mobile-nav.js      compact drawer + toggle  ("use client")
   dashboard/page.js    /dashboard
   study/page.js        /study
   quiz/page.js         /quiz
@@ -81,9 +84,26 @@ public/                static assets served from /
 .env.example           environment variable template (no secrets)
 ```
 
+### Application shell
+
+`app/layout.js` is the root layout. Below `lg` the sidebar is hidden and the
+header exposes a compact drawer; at `lg` and above the shell becomes a
+`16rem | 1fr` grid with a sticky full-height sidebar. Verified with no
+horizontal overflow at both 375px and 1280px.
+
 ### Server vs Client Components
 
-Every page is a Server Component. `app/components/site-nav.js` is the only file
-with `"use client"`, because it needs real interactivity: the mobile menu's
-open/close state and active-link highlighting via `usePathname()`. Adding a
-screen means adding one entry to `lib/routes.js` plus its `page.js`.
+Every page, the layout, the sidebar, and the header are Server Components.
+Exactly two files carry `"use client"`, each for one specific browser need:
+
+| File | Why it needs the client |
+| --- | --- |
+| `app/components/nav-links.js` | `usePathname()` for active-route styling |
+| `app/components/mobile-nav.js` | open/closed state of the drawer |
+
+The drawer overlay is portalled to `document.body`. The header sets
+`backdrop-blur`, and a `backdrop-filter` makes an element a containing block for
+`position: fixed` descendants — rendered inline, the overlay would be clipped to
+the header's box.
+
+Adding a screen means adding one entry to `lib/routes.js` plus its `page.js`.

@@ -57,10 +57,10 @@ export default function HealthPage() {
         <dl className="mt-4 divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
           {runtime.map(({ label, value }) => (
             <div key={label} className="flex justify-between gap-4 py-3">
-              <dt className="text-sm text-zinc-500 dark:text-zinc-400">
+              <dt className="shrink-0 text-sm text-zinc-500 dark:text-zinc-400">
                 {label}
               </dt>
-              <dd className="font-mono text-sm text-zinc-900 dark:text-zinc-100">
+              <dd className="min-w-0 text-right font-mono text-sm break-all text-zinc-900 dark:text-zinc-100">
                 {value}
               </dd>
             </div>
@@ -78,10 +78,10 @@ export default function HealthPage() {
         <dl className="mt-4 divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
           {config.map(({ label, value }) => (
             <div key={label} className="flex justify-between gap-4 py-3">
-              <dt className="font-mono text-sm text-zinc-500 dark:text-zinc-400">
+              <dt className="min-w-0 font-mono text-sm break-all text-zinc-500 dark:text-zinc-400">
                 {label}
               </dt>
-              <dd className="text-sm text-zinc-900 dark:text-zinc-100">
+              <dd className="shrink-0 text-sm text-zinc-900 dark:text-zinc-100">
                 {value}
               </dd>
             </div>
