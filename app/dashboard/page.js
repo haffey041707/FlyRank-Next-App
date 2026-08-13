@@ -10,7 +10,7 @@ export default function DashboardPage() {
     <Screen
       eyebrow="Overview"
       title="Dashboard"
-      description="Your study activity at a glance — recent sessions, current streak, and what's due for review."
+      description="Preview deployment verified"
       status="Coming soon"
       planned={[
         "Summary tiles for sessions completed, quiz accuracy, and cards due",
