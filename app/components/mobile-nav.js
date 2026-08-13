@@ -8,6 +8,9 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import NavLinks from "./nav-links";
 
+const ICON_BUTTON =
+  "inline-flex items-center justify-center rounded-control p-2 text-muted transition-colors hover:bg-surface-hover hover:text-foreground";
+
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -33,7 +36,7 @@ export default function MobileNav() {
         aria-expanded={open}
         aria-controls="mobile-drawer"
         aria-label="Open navigation"
-        className="inline-flex items-center justify-center rounded-md p-2 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        className={ICON_BUTTON}
       >
         <svg
           viewBox="0 0 24 24"
@@ -61,22 +64,22 @@ export default function MobileNav() {
                 type="button"
                 onClick={close}
                 aria-label="Close navigation"
-                className="absolute inset-0 h-full w-full bg-zinc-900/40 dark:bg-black/60"
+                className="absolute inset-0 h-full w-full bg-background/80"
               />
 
               <div
                 id="mobile-drawer"
-                className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
+                className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col border-r border-border bg-surface"
               >
-                <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-                  <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+                <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                  <span className="text-sm font-semibold tracking-tight text-foreground">
                     AI Study Assistant
                   </span>
                   <button
                     type="button"
                     onClick={close}
                     aria-label="Close navigation"
-                    className="inline-flex items-center justify-center rounded-md p-2 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                    className={ICON_BUTTON}
                   >
                     <svg
                       viewBox="0 0 24 24"

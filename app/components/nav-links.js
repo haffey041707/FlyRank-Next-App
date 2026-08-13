@@ -27,15 +27,15 @@ export default function NavLinks({ onNavigate, showDescriptions = false }) {
               href={href}
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
-              className={`block rounded-md px-3 py-2 text-sm font-medium ${
+              className={`block rounded-control px-3 py-2 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted hover:bg-surface-hover hover:text-foreground"
               }`}
             >
               {label}
               {showDescriptions ? (
-                <span className="mt-0.5 block text-xs font-normal opacity-70">
+                <span className="mt-0.5 block text-xs font-normal opacity-80">
                   {description}
                 </span>
               ) : null}

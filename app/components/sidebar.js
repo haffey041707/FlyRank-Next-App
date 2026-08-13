@@ -8,15 +8,15 @@ import NavLinks from "./nav-links";
  */
 export default function Sidebar() {
   return (
-    <aside className="sticky top-0 hidden h-screen flex-col border-r border-zinc-200 bg-white lg:flex dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
+    <aside className="sticky top-0 hidden h-screen flex-col border-r border-border bg-surface lg:flex">
+      <div className="border-b border-border px-5 py-4">
         <Link
           href="/"
-          className="block text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
+          className="block rounded-control text-sm font-semibold tracking-tight text-foreground"
         >
           AI Study Assistant
         </Link>
-        <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-0.5 text-xs text-muted">
           Study &amp; revision workspace
         </p>
       </div>
@@ -25,7 +25,7 @@ export default function Sidebar() {
         <NavLinks />
       </nav>
 
-      <div className="border-t border-zinc-200 px-5 py-3 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+      <div className="border-t border-border px-5 py-3 text-xs text-muted">
         Routed scaffold
       </div>
     </aside>

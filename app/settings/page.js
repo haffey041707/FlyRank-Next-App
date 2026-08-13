@@ -1,3 +1,4 @@
+import Card from "@/app/components/card";
 import Screen from "@/app/components/screen";
 
 export const metadata = {
@@ -19,14 +20,14 @@ export default function SettingsPage() {
         "Data controls: export or clear your study history",
       ]}
     >
-      <p className="mt-10 rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
+      <Card className="mt-section p-gutter text-sm text-muted">
         API credentials are never entered or stored in the browser. They stay in
         server-side environment variables — see{" "}
-        <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-xs dark:bg-white/[.08]">
+        <code className="rounded-control bg-surface-hover px-1.5 py-0.5 font-mono text-xs text-primary-accent">
           .env.example
         </code>
         .
-      </p>
+      </Card>
     </Screen>
   );
 }

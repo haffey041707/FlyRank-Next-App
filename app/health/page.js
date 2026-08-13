@@ -1,4 +1,5 @@
-import Screen from "@/app/components/screen";
+import Card from "@/app/components/card";
+import Screen, { SectionHeading } from "@/app/components/screen";
 import { navItems } from "@/lib/routes";
 
 export const metadata = {
@@ -18,9 +19,33 @@ function configured(name) {
   return Boolean(process.env[name]) ? "Configured" : "Not set";
 }
 
+function DefinitionList({ rows, labelClassName = "", valueClassName = "" }) {
+  return (
+    // Card renders the <dl> itself: dl > div > dt/dd is the one wrapper level
+    // the HTML spec allows.
+    <Card as="dl" className="mt-stack divide-y divide-border">
+      {rows.map(({ label, value, tone }) => (
+        <div
+          key={label}
+          className="flex justify-between gap-4 px-gutter py-3 text-sm"
+        >
+          <dt className={`text-muted ${labelClassName}`}>{label}</dt>
+          <dd
+            className={`${
+              tone === "success" ? "text-success" : "text-foreground"
+            } ${valueClassName}`}
+          >
+            {value}
+          </dd>
+        </div>
+      ))}
+    </Card>
+  );
+}
+
 export default function HealthPage() {
   const runtime = [
-    { label: "Status", value: "Healthy" },
+    { label: "Status", value: "Healthy", tone: "success" },
     { label: "Environment", value: process.env.NODE_ENV },
     { label: "Node runtime", value: process.version },
     { label: "Routes registered", value: `${navItems.length + 1}` },
@@ -47,46 +72,22 @@ export default function HealthPage() {
       description="Runtime and configuration status for this deployment. Server-side secrets are reported as configured or not set — never by value."
       status="Scaffold complete"
     >
-      <section className="mt-10" aria-labelledby="runtime-heading">
-        <h2
-          id="runtime-heading"
-          className="text-xs font-medium tracking-widest text-zinc-500 uppercase dark:text-zinc-400"
-        >
-          Runtime
-        </h2>
-        <dl className="mt-4 divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
-          {runtime.map(({ label, value }) => (
-            <div key={label} className="flex justify-between gap-4 py-3">
-              <dt className="shrink-0 text-sm text-zinc-500 dark:text-zinc-400">
-                {label}
-              </dt>
-              <dd className="min-w-0 text-right font-mono text-sm break-all text-zinc-900 dark:text-zinc-100">
-                {value}
-              </dd>
-            </div>
-          ))}
-        </dl>
+      <section className="mt-section" aria-labelledby="runtime-heading">
+        <SectionHeading id="runtime-heading">Runtime</SectionHeading>
+        <DefinitionList
+          rows={runtime}
+          labelClassName="shrink-0"
+          valueClassName="min-w-0 text-right font-mono break-all"
+        />
       </section>
 
-      <section className="mt-10" aria-labelledby="config-heading">
-        <h2
-          id="config-heading"
-          className="text-xs font-medium tracking-widest text-zinc-500 uppercase dark:text-zinc-400"
-        >
-          Configuration
-        </h2>
-        <dl className="mt-4 divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
-          {config.map(({ label, value }) => (
-            <div key={label} className="flex justify-between gap-4 py-3">
-              <dt className="min-w-0 font-mono text-sm break-all text-zinc-500 dark:text-zinc-400">
-                {label}
-              </dt>
-              <dd className="shrink-0 text-sm text-zinc-900 dark:text-zinc-100">
-                {value}
-              </dd>
-            </div>
-          ))}
-        </dl>
+      <section className="mt-section" aria-labelledby="config-heading">
+        <SectionHeading id="config-heading">Configuration</SectionHeading>
+        <DefinitionList
+          rows={config}
+          labelClassName="min-w-0 font-mono break-all"
+          valueClassName="shrink-0 text-right"
+        />
       </section>
     </Screen>
   );

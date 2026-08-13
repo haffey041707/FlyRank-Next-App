@@ -37,6 +37,53 @@ committed**. `.env.example` is the checked-in template and contains placeholders
 only. Variables prefixed with `NEXT_PUBLIC_` are exposed to the browser — keep
 secrets unprefixed and server-side.
 
+## Design system
+
+All visual values live in one `@theme` block in [`app/globals.css`](app/globals.css)
+and are consumed as Tailwind utilities. Components never hard-code a colour,
+radius, or spacing value — every hex literal in the codebase is in that file.
+
+| Token | Value | Utility |
+| --- | --- | --- |
+| `--color-background` | `#080d1a` | `bg-background` |
+| `--color-surface` | `#0f1729` | `bg-surface` |
+| `--color-surface-hover` | `#16203a` | `bg-surface-hover` |
+| `--color-border` | `#1e2a44` | `border-border` |
+| `--color-border-strong` | `#2a3a5c` | `border-border-strong` |
+| `--color-foreground` | `#eaeef9` | `text-foreground` |
+| `--color-muted` | `#9aa7c7` | `text-muted` |
+| `--color-primary` | `#4f46e5` | `bg-primary` |
+| `--color-primary-hover` | `#5850ec` | `hover:bg-primary-hover` |
+| `--color-primary-foreground` | `#ffffff` | `text-primary-foreground` |
+| `--color-primary-accent` | `#818cf8` | `text-primary-accent` |
+| `--color-primary-soft` | `#161d3d` | `bg-primary-soft` |
+| `--color-success` / `-soft` | `#34d399` / `#0c2a22` | `text-success`, `bg-success-soft` |
+| `--color-warning` / `-soft` | `#fbbf24` / `#2a2110` | `text-warning`, `bg-warning-soft` |
+| `--color-danger` / `-soft` | `#f87171` / `#2c1519` | `text-danger`, `bg-danger-soft` |
+| `--radius-control` | `0.5rem` | `rounded-control` |
+| `--radius-card` | `0.75rem` | `rounded-card` |
+| `--radius-pill` | `9999px` | `rounded-pill` |
+| `--spacing-gutter` | `1.5rem` | `px-gutter` |
+| `--spacing-section` | `2.5rem` | `mt-section` |
+| `--spacing-stack` | `1rem` | `mt-stack` |
+| `--spacing-sidebar` | `16rem` | sidebar grid column |
+
+**Spacing conventions:** `gutter` for horizontal page and card padding,
+`section` for the gap between major page sections, `stack` for the gap between
+related blocks within a section.
+
+**Contrast:** every foreground/background pair meets WCAG AA (4.5:1). Body text
+is 16.71:1, muted text 8.06:1, button labels 6.29:1, and each status badge
+6.18:1 or better against its own soft background.
+
+**Theme:** dark-first — one professional navy/indigo theme rather than a
+light/dark pair, with `color-scheme: dark` so native controls match. Adding a
+light theme means redefining these same tokens under a media query or
+`[data-theme]` selector; no component would change.
+
+**Primitives:** `Card` and `Button` ([app/components/](app/components/)) exist so
+surfaces and actions are token-driven by construction rather than by convention.
+
 ## Routes
 
 Every screen from the spec exists as a routed placeholder.
@@ -67,7 +114,9 @@ app/
   components/
     sidebar.js         desktop sidebar          (Server)
     header.js          simple top bar           (Server)
-    screen.js          shared placeholder shell (Server)
+    screen.js          placeholder shell, badge (Server)
+    card.js            surface primitive        (Server)
+    button.js          action primitive         (Server)
     nav-links.js       link list, active state  ("use client")
     mobile-nav.js      compact drawer + toggle  ("use client")
   dashboard/page.js    /dashboard
