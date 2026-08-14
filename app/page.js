@@ -17,7 +17,7 @@ export default function Home() {
           </h1>
           <StatusBadge status="Scaffold complete" />
         </div>
-        <p className="mt-stack text-lg leading-8 text-muted">
+        <p className="mt-stack text-lg leading-8 text-muted-foreground">
           Every screen from the spec is routed and reachable. Each one is a
           placeholder for now — the AI features land next.
         </p>
@@ -44,7 +44,7 @@ export default function Home() {
                 <span className="block text-sm font-medium text-foreground">
                   {label}
                 </span>
-                <span className="mt-1 block text-sm text-muted">
+                <span className="mt-1 block text-sm text-muted-foreground">
                   {description}
                 </span>
                 <span className="mt-2 block font-mono text-xs text-primary-accent">

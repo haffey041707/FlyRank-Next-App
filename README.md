@@ -7,9 +7,21 @@ Production-ready [Next.js](https://nextjs.org) application scaffold.
 | Concern   | Choice                    |
 | --------- | ------------------------- |
 | Framework | Next.js 16 (App Router)   |
-| Language  | JavaScript                |
+| Language  | JavaScript, with TypeScript for `playground/` and `components/ui/` |
 | Styling   | Tailwind CSS v4           |
+| UI        | hand-built components + shadcn/ui (Base UI) |
 | Linting   | ESLint (`eslint-config-next`) |
+
+## Component playground
+
+[`playground/`](playground/) holds a Modal, Tabs, and Disclosure written from
+scratch in React + TypeScript with **no component library**, plus a shadcn/ui
+Dialog and Tabs for comparison. Both sets render at
+[`/playground`](app/playground/page.tsx).
+
+[`NOTES.md`](NOTES.md) records what shadcn handles more completely than the
+hand-built versions — and two differences that turned out to be false when
+actually measured.
 
 ## Getting started
 

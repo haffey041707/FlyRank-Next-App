@@ -51,7 +51,7 @@ export default function RootLayout({ children }) {
               {children}
             </main>
 
-            <footer className="border-t border-border px-gutter py-6 text-sm text-muted">
+            <footer className="border-t border-border px-gutter py-6 text-sm text-muted-foreground">
               AI Study Assistant — routed scaffold. Features land screen by
               screen.
             </footer>

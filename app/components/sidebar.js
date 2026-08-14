@@ -16,7 +16,7 @@ export default function Sidebar() {
         >
           AI Study Assistant
         </Link>
-        <p className="mt-0.5 text-xs text-muted">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           Study &amp; revision workspace
         </p>
       </div>
@@ -25,7 +25,7 @@ export default function Sidebar() {
         <NavLinks />
       </nav>
 
-      <div className="border-t border-border px-5 py-3 text-xs text-muted">
+      <div className="border-t border-border px-5 py-3 text-xs text-muted-foreground">
         Routed scaffold
       </div>
     </aside>

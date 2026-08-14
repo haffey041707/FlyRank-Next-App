@@ -96,7 +96,7 @@ function configured(name) {
 function Row({ label, value, tone }) {
   return (
     <div className="flex justify-between gap-4 px-gutter py-3 text-sm">
-      <dt className="shrink-0 text-muted">{label}</dt>
+      <dt className="shrink-0 text-muted-foreground">{label}</dt>
       <dd
         className={`min-w-0 text-right font-mono break-all ${
           tone === "success" ? "text-success" : "text-foreground"
@@ -168,14 +168,14 @@ export default async function HealthPage() {
               Health check failed
             </p>
             <p className="mt-2 text-sm text-foreground">{health.error}</p>
-            <p className="mt-2 text-sm text-muted">
+            <p className="mt-2 text-sm text-muted-foreground">
               The page itself is rendering, so the server is up — the check
               above could not read the endpoint.
             </p>
           </Card>
         )}
 
-        <p className="mt-3 text-xs text-muted">
+        <p className="mt-3 text-xs text-muted-foreground">
           Source:{" "}
           <code className="font-mono text-primary-accent">
             GET {health.endpoint}
@@ -191,7 +191,7 @@ export default async function HealthPage() {
               key={label}
               className="flex justify-between gap-4 px-gutter py-3 text-sm"
             >
-              <dt className="min-w-0 font-mono break-all text-muted">
+              <dt className="min-w-0 font-mono break-all text-muted-foreground">
                 {label}
               </dt>
               <dd className="shrink-0 text-right text-foreground">{value}</dd>

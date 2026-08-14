@@ -11,7 +11,7 @@ const VARIANTS = {
   secondary:
     "border border-border bg-surface text-foreground hover:border-border-strong hover:bg-surface-hover",
   ghost:
-    "border border-transparent text-muted hover:bg-surface-hover hover:text-foreground",
+    "border border-transparent text-muted-foreground hover:bg-surface-hover hover:text-foreground",
   danger:
     "border border-danger/30 bg-danger-soft text-danger hover:border-danger/50",
 };

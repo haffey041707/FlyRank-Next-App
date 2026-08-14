@@ -30,7 +30,7 @@ export default function NavLinks({ onNavigate, showDescriptions = false }) {
               className={`block rounded-control px-3 py-2 text-sm font-medium transition-colors ${
                 active
                   ? "bg-primary text-primary-foreground"
-                  : "text-muted hover:bg-surface-hover hover:text-foreground"
+                  : "text-muted-foreground hover:bg-surface-hover hover:text-foreground"
               }`}
             >
               {label}

@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 import NavLinks from "./nav-links";
 
 const ICON_BUTTON =
-  "inline-flex items-center justify-center rounded-control p-2 text-muted transition-colors hover:bg-surface-hover hover:text-foreground";
+  "inline-flex items-center justify-center rounded-control p-2 text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);

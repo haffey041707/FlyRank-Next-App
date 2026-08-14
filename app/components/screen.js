@@ -14,7 +14,8 @@ const STATUS_VARIANTS = {
   Blocked: "bg-danger-soft text-danger ring-danger/30",
 };
 
-const FALLBACK_STATUS = "bg-surface-hover text-muted ring-border-strong";
+const FALLBACK_STATUS =
+  "bg-surface-hover text-muted-foreground ring-border-strong";
 
 export function StatusBadge({ status }) {
   return (
@@ -33,7 +34,7 @@ export function SectionHeading({ id, children }) {
   return (
     <h2
       id={id}
-      className="text-xs font-medium tracking-widest text-muted uppercase"
+      className="text-xs font-medium tracking-widest text-muted-foreground uppercase"
     >
       {children}
     </h2>
@@ -62,7 +63,9 @@ export default function Screen({
           </h1>
           <StatusBadge status={status} />
         </div>
-        <p className="mt-stack text-lg leading-8 text-muted">{description}</p>
+        <p className="mt-stack text-lg leading-8 text-muted-foreground">
+          {description}
+        </p>
       </header>
 
       {planned.length > 0 ? (

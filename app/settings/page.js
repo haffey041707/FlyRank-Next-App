@@ -20,7 +20,7 @@ export default function SettingsPage() {
         "Data controls: export or clear your study history",
       ]}
     >
-      <Card className="mt-section p-gutter text-sm text-muted">
+      <Card className="mt-section p-gutter text-sm text-muted-foreground">
         API credentials are never entered or stored in the browser. They stay in
         server-side environment variables — see{" "}
         <code className="rounded-control bg-surface-hover px-1.5 py-0.5 font-mono text-xs text-primary-accent">
